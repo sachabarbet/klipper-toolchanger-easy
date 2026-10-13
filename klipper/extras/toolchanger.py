@@ -280,7 +280,7 @@ class Toolchanger:
 
     def initialize(self, select_tool=None):
         if self.status == STATUS_CHANGING:
-            raise Exception('Cannot initialize while changing tools')
+            raise self.gcode.error('Cannot initialize while changing tools')
 
         # Initialize may be called from within the intialize gcode
         # to set active tool without performing a full change
