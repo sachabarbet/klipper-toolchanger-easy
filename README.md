@@ -25,7 +25,7 @@ This script does the following:
 Running `install.sh` multiple times is a safe opearation, provided you follow the instructions below about configuration.
 ```
 cd ~/
-git clone https://github.com/jwellman80/klipper-toolchanger-easy.git
+git clone https://github.com/sachabarbet/klipper-toolchanger-easy.git
 cd ~/klipper-toolchanger-easy
 ./install.sh
 ```
@@ -41,12 +41,13 @@ Optional, but recommended, add the following to your `moonraker.conf` to enable 
 type: git_repo
 channel: dev
 path: ~/klipper-toolchanger-easy
-origin: https://github.com/jwellman80/klipper-toolchanger-easy.git
+origin: https://github.com/sachabarbet/klipper-toolchanger-easy.git
 managed_services: klipper
 primary_branch: main
 ```
 
 ## Changelog
+* 2026.10.12 - **Behavior change** Homing turns skew correction off, load your skew profile again after homing (see [Skew correction](#skew-correction)). `G28 Z` needs X and Y to be homed, and homing only X or Y no longer leaves Z marked as homed.
 * 2026.1.25 - Example script for camera tool alignment.
 * 2025.12.26 - **Breaking change** Stop using Gcode offset for tool offsets. Uses a dedicated gcode transform instead.
 * 2025.12.25 - Use Bezier curves for rounded paths.
@@ -97,6 +98,9 @@ Top of `print_start` macro
     M117 Quad Gantry Level
     QUAD_GANTRY_LEVEL
     G28 Z
+
+    # If you use skew correction, load your profile here, after the last G28
+    # SKEW_PROFILE LOAD=my_skew_profile
 ```
 
 Bottom of `print_start` macro:
@@ -117,3 +121,8 @@ Bottom of `print_start` macro:
 
 Follow the Slicer configuration in the DraftShift Design Wiki:
 https://github.com/DraftShift/StealthChanger/wiki/Slicers
+
+# Skew correction
+Homing turns skew correction off (`SET_SKEW CLEAR=1`), because the homing moves run while X and Y are not homed yet. Load your skew profile after the last `G28` of your `print_start` macro, as shown above. If you home again later, load it again.
+
+Dock positions are only valid for the skew correction they were aligned with. If you print with skew correction, load your profile before aligning the docks.
